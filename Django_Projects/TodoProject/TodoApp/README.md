@@ -3,7 +3,6 @@
 Welcome to the Django Todo App! This application is designed to help you efficiently manage your tasks and to-do lists. It offers a wide range of features, making task management a breeze.
 
 ### 1. Create Tasks
-![Create Task](https://github.com/Solomonkassa/Todoapp/raw/main/Assets/27.10.2023_15.45.34_REC.png)
 You can easily create new tasks with this app. Each task includes the following details:
 
 - **Title:** A brief description of the task.
@@ -12,24 +11,18 @@ You can easily create new tasks with this app. Each task includes the following 
 - **Priority:** Assign a priority level to the task.
   
 ### 2. Update Tasks
-![Create Task](https://github.com/Solomonkassa/Todoapp/blob/main/Assets/27.10.2023_15.57.12_REC.png)
 Tasks are dynamic. You can update them at any time. Edit the title, description, due date, priority, and even add or remove your tasks up-to-date.
 
 ### 3. Delete Tasks
-![Create Task](https://github.com/Solomonkassa/Todoapp/blob/main/Assets/27.10.2023_15.55.24_REC.png)
 If a task is no longer relevant, you can delete it. The app provides a simple way to remove unwanted tasks from your list.
 
 ### 4. Read Task Details
-![Create Task](https://github.com/Solomonkassa/Todoapp/blob/main/Assets/27.10.2023_15.52.39_REC.png)
 You can view the complete details of each task. This includes the title, d due date, priority,giving you a comprehensive overview of what each task entails.
 
 ### 5. Mark Completed Tasks
-![Create Task](https://github.com/Solomonkassa/Todoapp/blob/main/Assets/27.10.2023_15.55.24_REC.png)
-
 Once you've completed a task, mark it as done with just a click. Completed tasks are visually distinguished from open ones for clarity.
 
 ### 6. Search 
-![Create Task(](https://github.com/Solomonkassa/Todoapp/blob/main/Assets/27.10.2023_15.58.21_REC.png)
  Use the search feature to filter and locate tasks . This is especially useful for tasks that require reference.
 
 ## Technologies Used
