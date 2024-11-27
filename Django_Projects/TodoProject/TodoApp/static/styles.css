@@ -1,0 +1,36 @@
+body {
+	background: rgba(26, 131, 236, 0.826);
+	font-family: 'Oswald', 'Futura', sans-serif
+        background-color: #15bec4; 
+     }
+
+.btn-custom {
+            background-color: #db0e52;
+            color: white;
+        }
+#wrapper {
+	margin-top: 10% !important;
+}
+#content {
+	background: rgb(209, 129, 25);
+	padding: 25px;
+}
+#content > h2 {
+	font-size: 18px;
+	text-align: center;
+	padding-top: 0;
+}
+.t10 {
+	margin-top: 10px;
+}
+.t20 {
+	margin-top: 20px;
+}
+.todo-completed {
+	text-decoration: line-through;
+	background: rgba(43, 56, 57, 0.3);
+}
+footer {
+	margin-top: 20px;
+	color: white;
+}
