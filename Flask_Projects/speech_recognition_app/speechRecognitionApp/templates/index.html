@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Transcription</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Display flashed messages -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                  {{ category }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+        <h1>Audio File Transcription</h1>
+        <form method="POST" enctype="multipart/form-data" action="/">
+            <label for="file">Upload Audio File:</label>
+            <input type="file" name="file" id="file" accept=".wav,.mp3,.flac,.ogg">
+            <button type="submit">Transcribe</button>
+        </form>
+
+        {% if transcription %}
+        <div class="result">
+            <h2>Transcription Result:</h2>
+            <p>{{ transcription }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>
