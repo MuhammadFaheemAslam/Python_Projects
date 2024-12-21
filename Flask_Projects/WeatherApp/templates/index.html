@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
+    <title>GFG App</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="weather-card">
+            <h1 style="color: green;"> Weather App </h1>
+            <form action="/" method="POST">
+                <input type="text" id="city-input" name="city_name" placeholder="Enter city name">
+                <button id="city-input-btn" type="submit">
+                    Get Weather
+                </button>
+            </form>
+            <div id="weather-info" class="animate__animated animate__fadeIn">
+                {% if weather_data %}
+                {% if weather_data.error %}
+                <p class="error">{{ weather_data.error }}</p>
+                {% else %}
+                <table>
+                    <thead>
+                        <h1 style="color: rgb(2, 33, 6);">Weather for {{ weather_data.name }} {{ weather_data.country}}</h1>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Temperature:</strong> </td>
+                            <td>{{ weather_data.temperature }}°C</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Feels Like:</strong></td>
+                            <td>{{ weather_data.feels_like }}°C</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Description:</strong></td>
+                            <td>{{ weather_data.description }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Emoji:</strong></td>
+                            <td id="emj">{{ weather_data.emoji }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Humidity:</strong></td>
+                            <td>{{ weather_data.humidity }}%</td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Wind Speed:</strong> </td>
+                            <td>{{ weather_data.wind_speed }} m/s</td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Local Time:</strong> </td>
+                            <td>{{ weather_data.local_time }}</td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>DAY/Night:</strong></td>
+                            <td>{{ weather_data.time_of_day}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
