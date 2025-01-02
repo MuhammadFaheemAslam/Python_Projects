@@ -6,39 +6,61 @@
     <h2 class="fw-bold mb-5 ">Register</h2>
     <form method="POST">
         {% csrf_token %}
-            <!-- {{form.as_p}} -->
+        <!-- {{form.as_p}} -->
         <div class="mb-3">
             <label for="username" class="form-label">{{ form.email.label }}</label>
             {{ form.email }}
-            {{ form.email.errors }}
+            <div class="text-danger mt-1" style="font-size: 0.9rem;">
+                {% for error in form.email.errors %}
+                    <p>{{ error|slice:":-1" }}</p>  
+                {% endfor %}
+            </div>
         </div>
 
         <div class="mb-3">
             <label for="username" class="form-label">{{ form.first_name.label }}</label>
             {{ form.first_name }}
-            {{ form.first_name.errors }}
+            <div class="text-danger mt-1" style="font-size: 0.9rem;">
+                {% for error in form.first_name.errors %}
+                    <p>{{ error|slice:":-1" }}</p> 
+                {% endfor %}
+            </div>
         </div>
 
         <div class="mb-3">
             <label for="email" class="form-label">{{ form.last_name.label }}</label>
-            
             {{ form.last_name }}
-            {{ form.last_name.errors }}
+            <div class="text-danger mt-1" style="font-size: 0.9rem;">
+                {% for error in form.last_name.errors %}
+                    <p>{{ error|slice:":-1" }}</p> 
+                {% endfor %}
+            </div>
         </div>
+
         <div class="mb-3">
             <label for="id_password1" class="form-label">{{ form.password1.label }}</label>
             {{ form.password1 }}
-            {{ form.password1.errors }}
+            <div class="text-danger mt-1" style="font-size: 0.9rem;">
+                {% for error in form.password1.errors %}
+                    <p>{{ error|slice:":-1" }}</p>  
+                {% endfor %}
+            </div>
         </div>
 
         <div class="mb-2">
             <label for="id_password2" class="form-label">{{ form.password2.label }}</label>
             {{ form.password2 }}
-            {{ form.password2.errors }}
+            <div class="text-danger mt-1" style="font-size: 0.9rem;">
+                {% for error in form.password2.errors %}
+                    <p>{{ error|slice:":-1" }}</p> 
+                {% endfor %}
+            </div>
         </div>
-        <div class="mt-4" >
+
+        <div class="mt-4">
             <button type="submit" class="btn btn-primary w-100 fw-bold" style="border-radius: 2rem;">Register</button>
         </div>
+        
         <div class="mt-4 text-center">
             <p>Already on WorkerHub? <a href="{% url 'login' %}">Sign in</a></p>
         </div>

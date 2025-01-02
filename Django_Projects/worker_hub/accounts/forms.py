@@ -35,6 +35,19 @@ class CustomUserCreationForm(UserCreationForm):
         if CustomUser.objects.filter(email=email).exists():
             raise ValidationError("An account already exists with this email address.")
         return email
+    
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get('first_name')
+        if any(char.isdigit() for char in first_name):  
+            raise ValidationError("First name should not contain digits.")
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get('last_name')
+        if any(char.isdigit() for char in last_name):  
+            raise ValidationError("Last name should not contain digits.")
+        return last_name
+    
 
     def clean_password1(self):
         password = self.cleaned_data.get('password1')
@@ -61,7 +74,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.username = user.email  # Set the username as the email
+        user.username = user.email  
         if commit:
             user.save()
         return user

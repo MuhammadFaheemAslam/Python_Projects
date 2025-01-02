@@ -142,17 +142,20 @@ def custom_login(request):
     """Handle user login with error messages displayed under corresponding fields."""
     email_error = None
     password_error = None
+    activation_error = None  # New error for account activation
 
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
 
         try:
-            user = User.objects.filter(email=email).first()
+            user = User.objects.filter(email=email).first() 
             if user:
-                if authenticate(request, email=email, password=password):
+                if not user.is_active:  # Check if the account is activated
+                    activation_error = "Your account is not activated. Please check your email for the activation link."
+                elif authenticate(request, email=email, password=password):  # Authenticate the user
                     login(request, user)
-                    return redirect('home')  # Replace 'home' with your desired success URL
+                    return redirect('home')  # Redirect to home page or dashboard
                 else:
                     password_error = "Incorrect password. Please try again."
             else:
@@ -164,4 +167,10 @@ def custom_login(request):
     return render(request, 'accounts/auth/login.html', {
         'email_error': email_error,
         'password_error': password_error,
+        'activation_error': activation_error,  # Pass activation_error to the template
     })
+
+
+def user_logout(request):
+    logout(request)
+    return redirect('login') 
