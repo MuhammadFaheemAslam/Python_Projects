@@ -1,0 +1,49 @@
+{% extends 'accounts/auth/auth_base.html' %}
+{% block title %}Welcome to Worker Hub{% endblock %}
+{% block content %}
+
+<div id="register">
+    <h2 class="fw-bold mb-5 ">Register</h2>
+    <form method="POST">
+        {% csrf_token %}
+            <!-- {{form.as_p}} -->
+        <div class="mb-3">
+            <label for="username" class="form-label">{{ form.email.label }}</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label for="username" class="form-label">{{ form.first_name.label }}</label>
+            {{ form.first_name }}
+            {{ form.first_name.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">{{ form.last_name.label }}</label>
+            
+            {{ form.last_name }}
+            {{ form.last_name.errors }}
+        </div>
+        <div class="mb-3">
+            <label for="id_password1" class="form-label">{{ form.password1.label }}</label>
+            {{ form.password1 }}
+            {{ form.password1.errors }}
+        </div>
+
+        <div class="mb-2">
+            <label for="id_password2" class="form-label">{{ form.password2.label }}</label>
+            {{ form.password2 }}
+            {{ form.password2.errors }}
+        </div>
+        <div class="mt-4" >
+            <button type="submit" class="btn btn-primary w-100 fw-bold" style="border-radius: 2rem;">Register</button>
+        </div>
+        <div class="mt-4 text-center">
+            <p>Already on WorkerHub? <a href="{% url 'login' %}">Sign in</a></p>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}
