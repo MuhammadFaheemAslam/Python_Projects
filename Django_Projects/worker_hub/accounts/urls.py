@@ -1,15 +1,14 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import LoginView, LogoutView
-from .accounts_views import register, activate_account, activation_sent, custom_login, user_logout
+from .accounts_views import register, activate_account, activation_sent,account_activated, custom_login, user_logout
 
 
 urlpatterns = [
     path('register/', register, name='register'),
     path('activation-sent/', activation_sent, name='activation_sent'),
     path('activate/<uidb64>/<token>/', activate_account, name='activate'),
-    # path('login/', LoginView.as_view(template_name='accounts/auth/login.html'), name='login'),
-    # path('logout/', LogoutView.as_view(), name='logout'),
+    path('account-activated/', account_activated, name='account_activated'),
     path('login/', custom_login, name='login'),
     path('logout/',user_logout, name='logout'),
     path('password_reset/password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
