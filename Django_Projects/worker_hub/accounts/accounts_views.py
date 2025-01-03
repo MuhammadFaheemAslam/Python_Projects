@@ -112,37 +112,12 @@ def activation_sent(request):
     return render(request, 'accounts/auth/activation_sent.html')
 
 
-"""
-def custom_login(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        try:
-            # Check if a user with the given email exists
-            user = User.objects.filter(email=email).first()
-            if user:
-                # Check if the password is correct
-                user = authenticate(request, email=email, password=password)
-                if user:
-                    login(request, user)
-                    return redirect('home')  # Replace 'home' with your desired success URL
-                else:
-                    messages.error(request, "Incorrect password. Please try again.", "danger")
-            else:
-                messages.error(request, "No account found with this email. Please register.", "danger")
-        except Exception as e:
-            logger.error(f"Error during login: {str(e)}")
-            messages.error(request, "An unexpected error occurred. Please try again later.", "danger")
-
-    return render(request, 'accounts/auth/login.html')
-"""
 
 def custom_login(request):
     """Handle user login with error messages displayed under corresponding fields."""
     email_error = None
     password_error = None
-    activation_error = None  # New error for account activation
+    activation_error = None  
 
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -151,11 +126,11 @@ def custom_login(request):
         try:
             user = User.objects.filter(email=email).first() 
             if user:
-                if not user.is_active:  # Check if the account is activated
+                if not user.is_active: 
                     activation_error = "Your account is not activated. Please check your email for the activation link."
-                elif authenticate(request, email=email, password=password):  # Authenticate the user
+                elif authenticate(request, email=email, password=password):  
                     login(request, user)
-                    return redirect('home')  # Redirect to home page or dashboard
+                    return redirect('home')  
                 else:
                     password_error = "Incorrect password. Please try again."
             else:
@@ -167,7 +142,7 @@ def custom_login(request):
     return render(request, 'accounts/auth/login.html', {
         'email_error': email_error,
         'password_error': password_error,
-        'activation_error': activation_error,  # Pass activation_error to the template
+        'activation_error': activation_error,  
     })
 
 

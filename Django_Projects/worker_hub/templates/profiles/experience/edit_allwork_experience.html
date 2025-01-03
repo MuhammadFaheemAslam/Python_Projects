@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Profile - Worker Hub{% endblock %}
+
+{% block content %}
+<div class="static-layout">
+    <div class="container-fluid ">
+        <div class="row d-flex justify-content-center">
+            <!-- Middle Column -->
+            <div class="col-md-12">
+                <!-- Work Experience -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex mb-3 justify-content-between">
+                            <h5 ><a href="{% url 'view_profile' %}"><i class="fa-sharp-duotone fa-solid fa-arrow-left rounded-circle px-3 text-decoration-none" id="pencil"></i></a> <span class="card-title mb-3">Experience</span></h5>
+                        </div>
+                        {% for experience in work_experiences %}
+                        <div class="px-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6>{{ experience.role }}</h6>
+                                <div class="px-3 fs-4">
+                                    <a href="{% url 'delete_work_experience' experience.id %}" class="text-black"><i id="pencil"
+                                            class="p-2 fa-regular fa-trash-can rounded-circle"></i></a>
+
+                                    <a href="{% url 'edit_work_experience' experience.id %}" class="text-black"><i id="pencil"
+                                            class="p-2 fa-sharp fa-solid fa-pencil rounded-circle"></i></a>
+                                </div>
+                            </div>
+                            
+                            <p class="text-muted mb-1">{{ experience.company_name }}</p>
+                            <p class="text-muted">{{ experience.start_date }} - {{ experience.end_date|default:"Present" }}
+                            </p>
+                            <p class="px-5">{{ experience.description }}</p>
+                            
+                            <hr class="m-5">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
