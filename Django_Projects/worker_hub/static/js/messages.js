@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const modal = new bootstrap.Modal(messageModal);
         modal.show();
 
-        // Automatically close after 10 seconds
+        // Automatically close after 20 seconds
         setTimeout(() => {
             modal.hide();
-        }, 10000); // 10 seconds
+        }, 20000); // 20 seconds
     }
 });

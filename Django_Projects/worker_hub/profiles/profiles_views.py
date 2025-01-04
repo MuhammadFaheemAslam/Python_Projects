@@ -155,17 +155,29 @@ def edit_work_experience(request, pk):
     work_experience = get_object_or_404(WorkExperience, pk=pk, profile__user=request.user)
     
     if request.method == 'POST':
-        form = WorkExperienceForm(request.POST, instance=work_experience)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Work experience updated successfully.')
-            return redirect('view_profile')
+        work_experience_form = WorkExperienceForm(request.POST, instance=work_experience)
+        if work_experience_form.is_valid():
+            start_date = work_experience_form.cleaned_data['start_date']
+            end_date = work_experience_form.cleaned_data['end_date']
+                    
+            if end_date and start_date > end_date:
+                messages.error(request, 'Start date must be earlier than end date.', 'danger')
+                return redirect('edit_work_experience', pk=pk)
+                
+            else:                
+                if work_experience.end_date is None:
+                    profile.current_position = f"{work_experience.role} at {work_experience.company_name}"
+                    profile.save()
+                
+                work_experience_form.save()
+                messages.success(request, 'Work experience updated successfully.')
+                return redirect('view_profile')
     else:
-        form = WorkExperienceForm(instance=work_experience)
+        work_experience_form = WorkExperienceForm(instance=work_experience)
     
     context = {
         'profile': profile,
-        'form': form
+        'form': work_experience_form
     }
 
     return render(request, 'profiles/experience/edit_work_experience.html', context)
@@ -182,7 +194,7 @@ def delete_work_experience(request, pk):
         return redirect('view_profile')
 
     context ={
-        'object': work_experience, 
+        'url_path': 'edit_allwork_experience', 
         'type': 'Work Experience',
         'profile': profile
         }
@@ -196,13 +208,13 @@ def add_education(request):
     next_url = request.GET.get('next', 'view_profile') 
 
     if request.method == 'POST':
-        education_form = EducationForm(request.POST)
+        form = EducationForm(request.POST)
         try:
-            if education_form.is_valid():
-                education = education_form.save(commit=False)
+            if form.is_valid():
+                education = form.save(commit=False)
                 education.profile = profile
-                start_year = education_form.cleaned_data['start_year']
-                end_year = education_form.cleaned_data['end_year']
+                start_year = form.cleaned_data['start_year']
+                end_year = form.cleaned_data['end_year']
                 if end_year and start_year > end_year:
                     messages.error(request, 'Start year must be earlier than end year.', 'danger')
                     return redirect(f"{reverse('add_education')}?{urlencode({'next': next_url})}")
@@ -216,11 +228,11 @@ def add_education(request):
             return redirect(f"{reverse('add_education')}?{urlencode({'next': next_url})}")
             
     else:
-        education_form = EducationForm()
+        form = EducationForm()
         
         context = {
         'profile': profile,
-        'form': education_form,
+        'form': form,
         'next': next_url,
     }
     return render(request, 'profiles/education/add_education.html', context)
@@ -246,9 +258,15 @@ def edit_education(request, pk):
     if request.method == 'POST':
         form = EducationForm(request.POST, instance=education)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Education detail is updated successfully.')
-            return redirect('edit_education')
+            start_year = form.cleaned_data['start_year']
+            end_year = form.cleaned_data['end_year']
+            if end_year and start_year > end_year:
+                messages.error(request, 'Start year must be earlier than end year.', 'danger')
+                return redirect('edit_education',pk=pk) 
+            else:       
+                form.save()
+                messages.success(request, 'Education detail is updated successfully.')
+                return redirect('edit_education',pk=pk) 
     else:
         form = EducationForm(instance=education)
         
@@ -271,7 +289,7 @@ def delete_education(request, pk):
     
     context = {
         'profile': profile,
-        'object': education, 
+        'url_path': 'edit_alleducation', 
         'type': 'Education'
         }
     return render(request, 'profiles/delete_confirmation.html', context)
@@ -346,7 +364,7 @@ def edit_skill(request, pk):
         'skill': skill
     }
     
-    return render(request, 'profiles/edit_skill.html', context)
+    return render(request, 'profiles/skills/edit_skill.html', context)
 
 # Delete Skill
 @login_required
@@ -360,7 +378,9 @@ def delete_skill(request, pk):
     
     context = {
         'profile': profile,
-        'object': skill, 'type': 'Skill'
+        'object': skill,
+        'type': 'Skill',
+        'url_path': 'edit_allskills', 
     }
 
     return render(request, 'profiles/delete_confirmation.html', context)
@@ -427,9 +447,16 @@ def edit_certification(request, pk):
     if request.method == "POST":
         form = CertificationForm(request.POST, instance=certification)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Certification updated successfully.")
-            return redirect('view_profile')
+            issue_date = form.cleaned_data['issue_date']
+            expire_date = form.cleaned_data['expiration_date']
+            
+            if issue_date > expire_date:
+                messages.error(request, 'Issue date must be earlier than Expira date.', 'danger')
+                return redirect('edit_certification', pk=pk) 
+            else:
+                form.save()
+                messages.success(request, "Certification updated successfully.")
+                return redirect('view_profile')
     else:
         form = CertificationForm(instance=certification)
         
@@ -443,13 +470,21 @@ def edit_certification(request, pk):
 # Delete Certification
 @login_required
 def delete_certification(request, pk):
+    profile = get_object_or_404(Profile, user=request.user)
     certification = get_object_or_404(Certification, pk=pk, profile__user=request.user)
     if request.method == "POST":
         certification.delete()
         messages.success(request, "Certification deleted successfully.")
         return redirect('view_profile')
+    
+    context = {
+        'profile': profile,
+        'object': certification,
+        'type': 'Certification',
+        'url_path': 'edit_allcertifications', 
+    }
 
-    return render(request, 'profiles/delete_confirmation.html', {'object': certification, 'type': 'Certification'})
+    return render(request, 'profiles/delete_confirmation.html', context)
 
 
 
@@ -464,22 +499,25 @@ def contact_info(request):
 
     return render(request, 'profiles/contact_info.html', context)
 
+
 @login_required
 def edit_contact_info(request):
-    profile_instance = get_object_or_404(Profile, user=request.user)
+    # Get or create the profile for the logged-in user
+    profile, created = Profile.objects.get_or_create(user=request.user)
 
-    if request.method == 'POST':
-        profile_instance.contact_email = request.POST.get('contact_email')
-        profile_instance.contact_phone = request.POST.get('contact_phone')
-        profile_instance.contact_website = request.POST.get('contact_website')
-        profile_instance.github_url = request.POST.get('github_url')
-        profile_instance.save()
-
-        messages.success(request, 'Contact information updated successfully.','success')
-        return redirect('contact_info')
-
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your profile has been updated successfully.")
+            return redirect("contact_info")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = ProfileForm(instance=profile)
+        
     context = {
-        'profile': profile_instance
+        'profile': form
     }
 
-    return render(request, 'profiles/edit_contact_info.html', context)
+    return render(request, "profiles/edit_contact_info.html", context)
