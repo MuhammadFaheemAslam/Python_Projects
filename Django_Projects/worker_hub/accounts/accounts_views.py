@@ -7,7 +7,6 @@ from django.urls import reverse
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.http import HttpResponse
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required
@@ -21,35 +20,34 @@ User = get_user_model()
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            try:
+        try:
+            if form.is_valid():
                 user = form.save(commit=False)
                 user.is_active = False  
                 user.save()
                 email_sent = send_activation_email(request, user)
                 if email_sent:
-                    messages.success(request, "Account created successfully! Check your email to confirm your account.",'success')
+                    messages.success(request, "Account created successfully! Check your email to confirm your account activation.", 'success')
                     return redirect(f"{reverse('activation_sent')}?email={user.email}")
                 else:
-                    messages.error(request, "Account not created, Because there was an error sending the activation email. Please contact support.", "danger")
+                    messages.error(request, "Account not created, because there was an error sending the activation email. Please contact support.", "danger")
                     user.delete()  
                     return redirect('register')
-                
-            except Exception as e:
-                user.delete() 
-                logger.error(f"Unexpected error during registration: {str(e)}")
-                messages.error(request, f"An unexpected error occurred. Please try again later. {str(e)}", "danger")
-                return redirect('register')
-        else:
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f"{error}", "danger")
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, f"{error}", "danger")
+                        break
                     break
-                break
+        except Exception as e:
+            logger.error(f"Unexpected error during registration: {str(e)}")
+            messages.error(request, f"Unexpected error during registration: {str(e)}", "danger")
+            return redirect('register')
     else:
         form = CustomUserCreationForm()
 
     return render(request, 'accounts/auth/register.html', {'form': form})
+
 
 
 def send_activation_email(request, user):
@@ -122,16 +120,21 @@ def custom_login(request):
             if user:
                 if not user.is_active: 
                     activation_error = "Your account is not activated. Please check your email for the activation link."
+                    messages.error(request, "Your account is not activated. Please check your email for the activation link.", "danger")
                 elif authenticate(request, email=email, password=password):  
                     login(request, user)
+                    messages.success(request, 'You logged in successfully!')
                     return redirect('home')  
                 else:
                     password_error = "Incorrect password. Please try again."
+                    
             else:
                 email_error = "No account found with this email. Please register."
+                messages.error(request, "No account found with this email. Please register.", "danger")
         except Exception as e:
             logger.error(f"Error during login: {str(e)}")
             email_error = "An unexpected error occurred. Please try again later."
+            messages.error(request, f"Error during login: {str(e)}", "danger")
 
     return render(request, 'accounts/auth/login.html', {
         'email_error': email_error,
@@ -143,4 +146,5 @@ def custom_login(request):
 @login_required
 def user_logout(request):
     logout(request)
+    messages.success(request, "You logged out successfully", "success")
     return redirect('login') 

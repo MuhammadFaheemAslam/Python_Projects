@@ -7,7 +7,6 @@ from django.urls import reverse
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.http import HttpResponse
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required
@@ -29,7 +28,7 @@ def register(request):
                 email_sent = send_activation_email(request, user)
                 if email_sent:
                     messages.success(request, "Account created successfully! Check your email to confirm your account.",'success')
-                    return redirect('activation_sent')
+                    return redirect(f"{reverse('activation_sent')}?email={user.email}")
                 else:
                     messages.error(request, "Account not created, Because there was an error sending the activation email. Please contact support.", "danger")
                     user.delete()  
@@ -84,7 +83,7 @@ def activate_account(request, uidb64, token):
             user.is_active = True
             user.save()
             messages.success(request, "Your account has been activated! You can now log in.", "success")
-            return redirect('login')
+            return redirect('account_activated')
         else:
             messages.error(request, "Invalid or expired activation link.", "danger")
             return redirect('register')
@@ -98,9 +97,14 @@ def activate_account(request, uidb64, token):
         return redirect('register')
 
 
-def activation_sent(request):
-    return render(request, 'accounts/auth/activation_sent.html')
 
+def activation_sent(request):
+    email = request.GET.get('email', None)
+    return render(request, 'accounts/auth/activation_sent.html', {'email': email})
+
+
+def account_activated(request):
+    return render(request, 'accounts/auth/activation_confirmation.html')
 
 
 def custom_login(request):
@@ -117,16 +121,20 @@ def custom_login(request):
             if user:
                 if not user.is_active: 
                     activation_error = "Your account is not activated. Please check your email for the activation link."
+                    messages.error(request, "Your account is not activated. Please check your email for the activation link.", "danger")
                 elif authenticate(request, email=email, password=password):  
                     login(request, user)
                     return redirect('home')  
                 else:
                     password_error = "Incorrect password. Please try again."
+                    
             else:
                 email_error = "No account found with this email. Please register."
+                messages.error(request, "No account found with this email. Please register.", "danger")
         except Exception as e:
             logger.error(f"Error during login: {str(e)}")
             email_error = "An unexpected error occurred. Please try again later."
+            messages.error(request, f"Error during login: {str(e)}", "danger")
 
     return render(request, 'accounts/auth/login.html', {
         'email_error': email_error,
@@ -138,4 +146,5 @@ def custom_login(request):
 @login_required
 def user_logout(request):
     logout(request)
+    messages.success(request, "You logged out successfully", "success")
     return redirect('login') 

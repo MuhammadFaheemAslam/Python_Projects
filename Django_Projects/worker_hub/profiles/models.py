@@ -64,7 +64,7 @@ class Certification(models.Model):
     name = models.CharField(max_length=100)
     issuing_organization = models.CharField(max_length=100)
     issue_date = models.DateField(blank=False)
-    expiration_date = models.DateField(blank=True, null=True)
+    expiration_date = models.DateField(blank=False)
     
     class Meta:
         unique_together = ('profile', 'name', 'issuing_organization', 'issue_date')

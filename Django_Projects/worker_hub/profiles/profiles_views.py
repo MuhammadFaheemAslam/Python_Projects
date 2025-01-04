@@ -2,8 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import IntegrityError
+from urllib.parse import urlencode
+from django.urls import reverse
 from .forms import ProfileForm, WorkExperienceForm, EducationForm, SkillForm, CertificationForm
 from .models import Profile, WorkExperience, Education, Skill, Certification
+
 
 @login_required
 def edit_profile(request):
@@ -86,12 +89,12 @@ def view_profile(request):
     return render(request, 'profiles/view_profile.html', context)
 
 
-###################################################################################
+##################################  working for experience  #################################################
 
-#start working for experience
 @login_required
 def add_work_experience(request):
     profile = get_object_or_404(Profile, user=request.user)
+    next_url = request.GET.get('next', 'view_profile') 
 
     if request.method == 'POST':
         work_experience_form = WorkExperienceForm(request.POST)
@@ -99,13 +102,14 @@ def add_work_experience(request):
             try:
                 work_experience = work_experience_form.save(commit=False)
                 work_experience.profile = profile
-                # Validate start_date and end_date
+                
                 start_date = work_experience_form.cleaned_data['start_date']
                 end_date = work_experience_form.cleaned_data['end_date']
                 
                 if end_date and start_date > end_date:
                     messages.error(request, 'Start date must be earlier than end date.', 'danger')
-                    return redirect('add_work_experience')
+                    return redirect(f"{reverse('add_work_experience')}?{urlencode({'next': next_url})}")
+                    
                 else:
                     work_experience.save()
                     
@@ -114,16 +118,22 @@ def add_work_experience(request):
                         profile.save()
                         
                     messages.success(request, 'Work experience added successfully.','success')
-                    return redirect('add_work_experience')  
+                    return redirect(f"{reverse('add_work_experience')}?{urlencode({'next': next_url})}")
                
             except IntegrityError:
                 messages.error(request, 'You have already added this work experience.', 'danger')
-                return redirect('add_work_experience')
+                return redirect(f"{reverse('add_work_experience')}?{urlencode({'next': next_url})}")
 
     else:
         work_experience_form = WorkExperienceForm()
+        
+        context = {
+        'profile': profile,
+        'form': work_experience_form,
+        'next': next_url,
+    }
 
-    return render(request, 'profiles/experience/add_work_experience.html', {'form': work_experience_form})
+    return render(request, 'profiles/experience/add_work_experience.html', context)
 
 #edit all work experiences
 @login_required
@@ -141,6 +151,7 @@ def edit_allwork_experience(request):
 # Edit Work Experience
 @login_required
 def edit_work_experience(request, pk):
+    profile = get_object_or_404(Profile, user=request.user)
     work_experience = get_object_or_404(WorkExperience, pk=pk, profile__user=request.user)
     
     if request.method == 'POST':
@@ -151,12 +162,18 @@ def edit_work_experience(request, pk):
             return redirect('view_profile')
     else:
         form = WorkExperienceForm(instance=work_experience)
+    
+    context = {
+        'profile': profile,
+        'form': form
+    }
 
-    return render(request, 'profiles/experience/edit_work_experience.html', {'form': form})
+    return render(request, 'profiles/experience/edit_work_experience.html', context)
 
 # Delete Work Experience
 @login_required
 def delete_work_experience(request, pk):
+    profile = get_object_or_404(Profile, user=request.user)
     work_experience = get_object_or_404(WorkExperience, pk=pk, profile__user=request.user)
     
     if request.method == 'POST':
@@ -164,15 +181,19 @@ def delete_work_experience(request, pk):
         messages.success(request, 'Work experience deleted successfully.')
         return redirect('view_profile')
 
-    return render(request, 'profiles/experience/delete_confirmation.html', {'object': work_experience, 'type': 'Work Experience'})
+    context ={
+        'object': work_experience, 
+        'type': 'Work Experience',
+        'profile': profile
+        }
+    return render(request, 'profiles/delete_confirmation.html', context)
 
 
-####################################################################################################
-
-#start working for education
+##########################################  working for education  ##########################################################
 @login_required
 def add_education(request):
     profile = get_object_or_404(Profile, user=request.user)
+    next_url = request.GET.get('next', 'view_profile') 
 
     if request.method == 'POST':
         education_form = EducationForm(request.POST)
@@ -182,22 +203,27 @@ def add_education(request):
                 education.profile = profile
                 start_year = education_form.cleaned_data['start_year']
                 end_year = education_form.cleaned_data['end_year']
-                if start_year > end_year:
+                if end_year and start_year > end_year:
                     messages.error(request, 'Start year must be earlier than end year.', 'danger')
-                    return redirect('add_education')
+                    return redirect(f"{reverse('add_education')}?{urlencode({'next': next_url})}")
                 else:
                     education.save()
                     messages.success(request, 'Education added successfully.', 'success')
-                    return redirect('add_education')
+                    return redirect(f"{reverse('add_education')}?{urlencode({'next': next_url})}")
             
         except IntegrityError:
             messages.error(request, 'You have already added this work experience.', 'danger')
-            return redirect('add_education')
+            return redirect(f"{reverse('add_education')}?{urlencode({'next': next_url})}")
             
     else:
         education_form = EducationForm()
-
-    return render(request, 'profiles/education/add_education.html', {'form': education_form})
+        
+        context = {
+        'profile': profile,
+        'form': education_form,
+        'next': next_url,
+    }
+    return render(request, 'profiles/education/add_education.html', context)
 
 
 @login_required
@@ -209,49 +235,54 @@ def edit_alleducation(request):
         'profile': profile,
         'educations': educations,
     }
-  
     return render(request, 'profiles/education/edit_alleducation.html', context)
 
+    
 # Edit Education
-@login_required
-def edit_education(request, education_id):
-    education = get_object_or_404(Education, id=education_id, profile__user=request.user)
-    if request.method == "POST":
-        school_name = request.POST.get('school_name')
-        degree = request.POST.get('degree')
-        field_of_study = request.POST.get('field_of_study')
-        start_year = request.POST.get('start_year')
-        end_year = request.POST.get('end_year')
+def edit_education(request, pk):
+    profile = get_object_or_404(Profile, user=request.user)
+    education = get_object_or_404(Education, pk=pk, profile__user=request.user)
+    
+    if request.method == 'POST':
+        form = EducationForm(request.POST, instance=education)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Education detail is updated successfully.')
+            return redirect('edit_education')
+    else:
+        form = EducationForm(instance=education)
+        
+    context = {
+    'profile': profile,
+    'form': form
+    }
 
-        education.school_name = school_name
-        education.degree = degree
-        education.field_of_study = field_of_study
-        education.start_year = start_year
-        education.end_year = end_year
-        education.save()
-
-        messages.success(request, "Education updated successfully.")
-        return redirect('view_profile')
-
-    return render(request, 'profiles/edit_education.html', {'education': education})
+    return render(request, 'profiles/education/edit_education.html',  context)
 
 # Delete Education
 @login_required
-def delete_education(request, education_id):
-    education = get_object_or_404(Education, id=education_id, profile__user=request.user)
+def delete_education(request, pk):
+    profile = get_object_or_404(Profile, user=request.user)
+    education = get_object_or_404(Education, pk=pk, profile__user=request.user)
     if request.method == "POST":
         education.delete()
         messages.success(request, "Education deleted successfully.")
         return redirect('view_profile')
+    
+    context = {
+        'profile': profile,
+        'object': education, 
+        'type': 'Education'
+        }
+    return render(request, 'profiles/delete_confirmation.html', context)
 
-    return render(request, 'profiles/delete_confirmation.html', {'object': education, 'type': 'Education'})
 
 
-
-##Skills working starts from here
+#####################################   kills working starts from here   ###############################################################
 @login_required
 def add_skill(request):
     profile = get_object_or_404(Profile, user=request.user)
+    next_url = request.GET.get('next', 'view_profile') 
 
     if request.method == 'POST':
         skill_form = SkillForm(request.POST)
@@ -271,16 +302,38 @@ def add_skill(request):
                 skill.save()
                 messages.success(request, 'Skill added successfully.')
                 
-            return redirect('edit_profile')
+            # return redirect('edit_profile')
+            return redirect(f"{reverse('add_skill')}?{urlencode({'next': next_url})}")
     else:
         skill_form = SkillForm()
+        
+        context = {
+        'profile': profile,
+        'form': skill_form,
+        'next': next_url,
+    }
 
-    return render(request, 'profiles/skills/add_skill.html', {'form': skill_form})
+    return render(request, 'profiles/skills/add_skill.html', context)
+
+# Edit all skills
+
+@login_required
+def edit_allskills(request):
+    profile = get_object_or_404(Profile, user=request.user)
+    skill = profile.skills.all()
+    
+    context = {
+        'profile': profile,
+        'skill': skill
+    }
+    
+    return render(request, 'profiles/skills/edit_allskills.html', context)
 
 # Edit Skill
 @login_required
-def edit_skill(request, skill_id):
-    skill = get_object_or_404(Skill, id=skill_id, profile__user=request.user)
+def edit_skill(request, pk):
+    profile = get_object_or_404(Profile, user=request.user)
+    skill = get_object_or_404(Skill, pk=pk, profile__user=request.user)
     if request.method == "POST":
         skill_name = request.POST.get('name')
         skill.name = skill_name
@@ -288,26 +341,37 @@ def edit_skill(request, skill_id):
 
         messages.success(request, "Skill updated successfully.")
         return redirect('view_profile')
-
-    return render(request, 'profiles/edit_skill.html', {'skill': skill})
+    context = {
+        'profile': profile,
+        'skill': skill
+    }
+    
+    return render(request, 'profiles/edit_skill.html', context)
 
 # Delete Skill
 @login_required
-def delete_skill(request, skill_id):
-    skill = get_object_or_404(Skill, id=skill_id, profile__user=request.user)
+def delete_skill(request, pk):
+    profile = get_object_or_404(Profile, user=request.user)
+    skill = get_object_or_404(Skill, pk=pk, profile__user=request.user)
     if request.method == "POST":
         skill.delete()
         messages.success(request, "Skill deleted successfully.")
         return redirect('view_profile')
+    
+    context = {
+        'profile': profile,
+        'object': skill, 'type': 'Skill'
+    }
 
-    return render(request, 'profiles/delete_confirmation.html', {'object': skill, 'type': 'Skill'})
+    return render(request, 'profiles/delete_confirmation.html', context)
 
 
 
-####Certification working start from here
+#####################################Certification working start from here   ##############################
 @login_required
 def add_certification(request):
     profile = get_object_or_404(Profile, user=request.user)
+    next_url = request.GET.get('next', 'view_profile') 
 
     if request.method == 'POST':
         certification_form = CertificationForm(request.POST)
@@ -315,43 +379,71 @@ def add_certification(request):
             if certification_form.is_valid():
                 certification = certification_form.save(commit=False)
                 certification.profile = profile
-                certification.save()
-                messages.success(request, 'Certification added successfully.','success')
-                return redirect('add_certification')
+                
+                issue_date = certification_form.cleaned_data['issue_date']
+                expire_date = certification_form.cleaned_data['expiration_date']
+                if issue_date > expire_date:
+                        messages.error(request, 'Issue date must be earlier than Expira date.', 'danger')
+                        return redirect(f"{reverse('add_certification')}?{urlencode({'next': next_url})}")
+                else:
+                    certification.save()
+                    messages.success(request, 'Certification added successfully.','success')
+                    return redirect(f"{reverse('add_certification')}?{urlencode({'next': next_url})}")
             
         except IntegrityError:
             messages.error(request, 'You have already added this course', 'danger')
-            return redirect('add_certification')
+            # return redirect('add_certification')
+            return redirect(f"{reverse('add_certification')}?{urlencode({'next': next_url})}")
+
     else:
         certification_form = CertificationForm()
+        context = {
+        'profile': profile,
+        'form': certification_form,
+        'next': next_url,
+        }
 
-    return render(request, 'profiles/certificates/add_certification.html', {'form': certification_form})
+    return render(request, 'profiles/certificates/add_certification.html', context)
+
+@login_required
+def edit_allcertifications(request):
+    profile = get_object_or_404(Profile, user=request.user)
+    certifications = profile.certifications.all().order_by('-issue_date')
+    
+    context = {
+        'profile': profile,
+        'certifications': certifications
+    }
+    
+    return render(request, 'profiles/certificates/edit_allcertifications.html', context)
+
 
 # Edit Certification
 @login_required
-def edit_certification(request, certification_id):
-    certification = get_object_or_404(Certification, id=certification_id, profile__user=request.user)
+def edit_certification(request, pk):
+    profile = get_object_or_404(Profile, user=request.user)
+    certification = get_object_or_404(Certification, pk=pk, profile__user=request.user)
+    
     if request.method == "POST":
-        name = request.POST.get('name')
-        issuing_organization = request.POST.get('issuing_organization')
-        issue_date = request.POST.get('issue_date')
-        expiration_date = request.POST.get('expiration_date')
+        form = CertificationForm(request.POST, instance=certification)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Certification updated successfully.")
+            return redirect('view_profile')
+    else:
+        form = CertificationForm(instance=certification)
+        
+    context = {
+        'profile': profile,
+        'form': form
+    }
 
-        certification.name = name
-        certification.issuing_organization = issuing_organization
-        certification.issue_date = issue_date
-        certification.expiration_date = expiration_date
-        certification.save()
-
-        messages.success(request, "Certification updated successfully.")
-        return redirect('view_profile')
-
-    return render(request, 'profiles/edit_certification.html', {'certification': certification})
+    return render(request, 'profiles/certificates/edit_certification.html', context)
 
 # Delete Certification
 @login_required
-def delete_certification(request, certification_id):
-    certification = get_object_or_404(Certification, id=certification_id, profile__user=request.user)
+def delete_certification(request, pk):
+    certification = get_object_or_404(Certification, pk=pk, profile__user=request.user)
     if request.method == "POST":
         certification.delete()
         messages.success(request, "Certification deleted successfully.")
@@ -361,7 +453,7 @@ def delete_certification(request, certification_id):
 
 
 
-#####contact info working starts from here
+######################################  contact info working starts from here     #################################
 @login_required
 def contact_info(request):
     profile_instance = get_object_or_404(Profile, user=request.user)

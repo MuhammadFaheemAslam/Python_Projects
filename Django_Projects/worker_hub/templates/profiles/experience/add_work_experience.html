@@ -1,26 +1,27 @@
 {% extends "core/base.html" %}
+{% block title %}Add Experience{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-center align-items-center">
-    <div class="card" style="width: 50rem;">
+    <div class="card border-0"  style="width: 50rem;">
         <div class="card-header">
             <h2>Add Work Experience</h2>
         </div>
         <div class="card-body p-5">
-            <!-- Display messages -->
+            <!-- 
             {% if messages %}
             {% for message in messages %}
             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
+                {{ message }} 
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             {% endfor %}
-            {% endif %}
+            {% endif %} -->
             <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <div class="d-flex mt-5 justify-content-between">
                     <button type="submit" class="btn btn-primary col-2">Save</button>
-                    <a href="{% url 'edit_profile' %}" class="btn btn-secondary col-2">Cancel</a>
+                    <a href="{{ next }}" class="btn btn-secondary col-2">Cancel</a>
                 </div>
             </form>
         </div>

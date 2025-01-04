@@ -1,19 +1,11 @@
 {% extends "core/base.html" %}
+{% block title %}Edit Profile{% endblock %}
 {% block content %}
-<div class="container-fluid d-flex justify-content-center">
-    <div class="card col-md-8">
-        <div class="card-header">
+<div class="container-fluid d-flex justify-content-center mb-5">
+    <div class="card col-md-8 border-0">
+        <div class="card-header border-0">
             <h2>Edit Your Profile</h2>
         </div>
-        <!-- Display messages -->
-            {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
-            {% endif %}
         <div class="card-body p-5 profile-edit">
             <!-- Profile Picture -->
             <form method="POST" enctype="multipart/form-data">
@@ -92,7 +84,8 @@
                     <input type="text" class="form-control" id="current_position" name="current_position" value="{{ profile.current_position }}" readonly>
                 </div>
                 <button type="button" class="btn btn-outline-secondary">
-                    <a href="{% url 'add_work_experience' %}">+ Add New Position</a>
+                    <a href="{% url 'add_work_experience' %}?next={% url 'edit_profile' %}">+ Add Work Experience</a>
+
                 </button>
 
                 <hr class="m-5">
@@ -103,7 +96,8 @@
                     <input type="text" class="form-control" id="education" name="education" value="{{ latest_education.field_of_study }}" readonly>
                 </div>
                 <button type="button" class="btn btn-outline-secondary">
-                    <a href="{% url 'add_education' %}">+ Add New Education</a>
+                    <!-- <a href="{% url 'add_education' %}">+ Add New Education</a> -->
+                    <a href="{% url 'add_education' %}?next={% url 'edit_profile' %}">+ Add New Education</a>
                 </button>
 
                 <hr class="m-5">
@@ -117,7 +111,7 @@
                     </div>
                 </div>
                 <button type="button" class="btn btn-outline-secondary">
-                    <a href="{% url 'add_skill' %}">+ Add New Skill</a>
+                    <a href="{% url 'add_skill' %}?next={% url 'edit_profile' %}">+ Add New Skill</a>
                 </button>
 
                 <hr class="m-5">
@@ -131,7 +125,7 @@
                     </div>
                 </div>
                 <button type="button" class="btn btn-outline-secondary mb-5">
-                    <a href="{% url 'add_certification' %}">+ Add New Certification</a>
+                    <a href="{% url 'add_certification' %}?next={% url 'edit_profile' %}">+ Add New Certification</a>
                 </button>
 
                 <!-- Save Button -->
@@ -142,7 +136,7 @@
             </form>
         </div>
         <!-- Save Button -->
-        <div class="card-footer">
+        <div class="card-footer border-0">
         </div>
     </div>
 </div>

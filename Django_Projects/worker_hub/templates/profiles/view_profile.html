@@ -39,14 +39,14 @@
             <!-- Middle Column -->
             <div class="col-md-11">
                 <!-- Work Experience -->
-                <div class="card mb-4">
+                <div class="card mb-4 border-0">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-3">Experience</h5>
                             <div class="px-3 fs-4">
-                                <a href="{% url 'add_work_experience' %}" class="text-black"> <i id="pencil" class="fa-sharp p-2 fa-regular fa-plus rounded-circle"></i></a>
+                                <a href="{% url 'add_work_experience' %}?next={% url 'view_profile' %}" class="text-primary"> <i id="pencil" class="fa-sharp p-3 fa-regular fa-plus rounded-circle"></i></a>
                                 {% if work_experiences %}
-                                    <a href="{% url 'edit_allwork_experience' %}" class="text-black"><i id="pencil" class="fa-sharp p-2 fa-solid fa-pencil rounded-circle"></i>
+                                    <a href="{% url 'edit_allwork_experience' %}" class="text-primary"><i id="pencil" class="fa-sharp p-3 fa-solid fa-pencil rounded-circle"></i>
                                     </a>
                                 {% endif %}
                             </div>
@@ -64,19 +64,14 @@
                 </div>
 
                 <!-- Education -->
-                <div class="card mb-4">
+                <div class="card mb-4 border-0">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-3">Education</h5>
                             <div class="px-3 fs-4">
+                                <a href="{% url 'add_education' %}?next={% url 'view_profile' %}" class="text-primary"> <i id="pencil" class="fa-sharp p-3 fa-regular fa-plus rounded-circle"></i></a>
                                 {% if educations %}
-                                    <a href="{% url 'edit_alleducation' %}" class="text-black">
-                                        <i id="pencil" class="fa-sharp p-3 fa-solid fa-pencil rounded-circle"></i>
-                                    </a>
-                                {% else %}
-                                    <a href="{% url 'add_education' %}" class="text-black">
-                                        <i id="pencil" class="fa-sharp p-3 fa-regular fa-plus rounded-circle"></i>
-                                    </a>
+                                    <a href="{% url 'edit_alleducation' %}" class="text-primary"> <i id="pencil" class="fa-sharp p-3 fa-solid fa-pencil rounded-circle"></i> </a>
                                 {% endif %}
                             </div>
                         </div>
@@ -92,44 +87,34 @@
                 </div>
 
                 <!-- Skills -->
-                <div class="card mb-4">
+                <div class="card mb-4 border-0">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-3">Skills</h5>
                             <div class="px-3 fs-4">
+                                <a href="{% url 'add_skill' %}?next={% url 'view_profile' %}" class="text-primary"><i id="pencil" class="fa-sharp p-3 fa-regular fa-plus rounded-circle"></i></a>
                                 {% if skills %}
-                                    <a href="{% url 'edit_allskills' %}" class="text-black">
-                                        <i id="pencil" class="fa-sharp p-3 fa-solid fa-pencil rounded-circle"></i>
-                                    </a>
-                                {% else %}
-                                    <a href="{% url 'add_skill' %}" class="text-black">
-                                        <i id="pencil" class="fa-sharp p-3 fa-regular fa-plus rounded-circle"></i>
-                                    </a>
+                                    <a href="{% url 'edit_allskills' %}" class="text-primary"> <i id="pencil" class="fa-sharp p-3 fa-solid fa-pencil rounded-circle"></i></a>   
                                 {% endif %}
                             </div>
                         </div>
                         {% for skill in skills %}
                         <div class="d-inline-block mb-2 px-4">
-                            <span class="badge bg-primary me-2">{{ skill.name }}</span>
+                            <span class="badge bg-primary">{{ skill.name }}</span>
                         </div>
                         {% endfor %}
                     </div>
                 </div>
 
                 <!-- Certifications -->
-                <div class="card mb-4">
+                <div class="card mb-4 border-0">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-3">Certifications</h5>
                             <div class="px-3 fs-4">
+                                <a href="{% url 'add_certification' %}?next={% url 'view_profile' %}" class="text-primary"><i id="pencil" class="fa-sharp p-3 fa-regular fa-plus rounded-circle"></i></a>
                                 {% if certifications %}
-                                    <a href="{% url 'edit_allcertifications' %}" class="text-black">
-                                        <i id="pencil" class="fa-sharp p-3 fa-solid fa-pencil rounded-circle"></i>
-                                    </a>
-                                {% else %}
-                                    <a href="{% url 'add_certification' %}" class="text-black">
-                                        <i id="pencil" class="fa-sharp p-3 fa-regular fa-plus rounded-circle"></i>
-                                    </a>
+                                    <a href="{% url 'edit_allcertifications' %}" class="text-primary"><i id="pencil" class="fa-sharp p-3 fa-solid fa-pencil rounded-circle"></i></a>
                                 {% endif %}
                             </div>
                         </div>
@@ -138,10 +123,8 @@
                             <h6>{{ certification.name }}</h6>
                             <p class="text-muted mb-1">Issued by {{ certification.issuing_organization }}</p>
                             <p class="text-muted">Issued: {{ certification.issue_date }}{% if certification.expiration_date %}, Expires: {{ certification.expiration_date }}{% endif %}</p>
-                            <a href="{% url 'edit_certification' certification.id %}"
-                                class="btn btn-sm btn-secondary me-2">Edit</a>
-                            <a href="{% url 'delete_certification' certification.id %}"
-                                class="btn btn-sm btn-danger">Delete</a>
+                            <!-- <a href="{% url 'edit_certification' certification.id %}" class="btn btn-sm btn-secondary me-2">Edit</a>
+                            <a href="{% url 'delete_certification' certification.id %}" class="btn btn-sm btn-danger">Delete</a> -->
                             <hr class="m-5">
                         </div>
                         {% endfor %}

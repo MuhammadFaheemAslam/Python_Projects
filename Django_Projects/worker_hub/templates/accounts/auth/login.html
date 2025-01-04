@@ -6,9 +6,6 @@
 <form method="POST">
     {% csrf_token %}
     <div class="mb-3">
-        {% if activation_error %}
-            <div class="text-danger mb-2">{{ activation_error }}</div>
-        {% endif %}
         <label for="exampleInputEmail1" class="form-label">Email</label>
         <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email"
             required>
